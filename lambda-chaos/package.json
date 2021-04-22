@@ -1,0 +1,16 @@
+{
+  "name": "lambda-chaos",
+  "private": "true",
+  "version": "0.0.0",
+  "scripts": {
+    "config": "aws s3 cp config.json s3://lambda-chaos/config.json",
+    "deploy": "sls deploy",
+    "test": "sls invoke --function chaos --log"
+  },
+  "dependencies": {
+    "failure-lambda": "0.4.2"
+  },
+  "devDependencies": {
+    "serverless": "2.37.2"
+  }
+}

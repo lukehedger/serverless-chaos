@@ -1,0 +1,62 @@
+app: serverless-chaos
+org: lukehedger
+service: lambda-chaos
+
+custom:
+  bucketName: lambda-chaos
+  objectName: "config.json"
+
+frameworkVersion: "2"
+
+functions:
+  chaos:
+    environment:
+      FAILURE_APPCONFIG_APPLICATION:
+        Ref: LambdaChaosApplication
+      FAILURE_APPCONFIG_CONFIGURATION:
+        Ref: LambdaChaosConfigurationProfile
+      FAILURE_APPCONFIG_ENVIRONMENT:
+        Ref: LambdaChaosDevEnvironment
+    events:
+      - http:
+          method: get
+          path: chaos
+    handler: index.handler
+
+provider:
+  lambdaHashingVersion: 20201221
+  name: aws
+  region: eu-west-2
+  runtime: nodejs14.x
+
+resources:
+  Resources:
+    LambdaChaosConfigBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}
+    LambdaChaosApplication:
+      Type: AWS::AppConfig::Application
+      Properties:
+        Name: lambda-chaos
+    LambdaChaosDevEnvironment:
+      Type: AWS::AppConfig::Environment
+      Properties:
+        ApplicationId:
+          Ref: LambdaChaosApplication
+        Name: dev
+    LambdaChaosConfigurationProfile:
+      Type: AWS::AppConfig::ConfigurationProfile
+      Properties:
+        ApplicationId:
+          Ref: LambdaChaosApplication
+        LocationUri:
+          Fn::Sub:
+            - "s3://${BucketName}/${ObjectName}"
+            - BucketName: !Ref LambdaChaosConfigBucket
+            - ObjectName: ${self:custom.objectName}
+        Name: failure-lambda
+        # RetrievalRoleArn: todo
+        # Validators:
+        #   - Type: JSON_SCHEMA
+        #     Content: todo

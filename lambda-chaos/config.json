@@ -1,0 +1,11 @@
+{
+  "denylist": ["s3.*.amazonaws.com"],
+  "diskSpace": 100,
+  "exceptionMsg": "Exception message!",
+  "failureMode": "latency",
+  "isEnabled": false,
+  "maxLatency": 400,
+  "minLatency": 100,
+  "rate": 1,
+  "statusCode": 404
+}
